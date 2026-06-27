@@ -1,0 +1,369 @@
+// Simola HOA Portal — Prisma schema
+// PostgreSQL database
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------------------------------------------------------
+// Enums
+// ----------------------------------------------------------------------------
+
+enum Role {
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+enum IssueCategory {
+  WATER_SEWERAGE
+  ELECTRICITY_FAILURE
+  ROAD_DAMAGE
+  SECURITY_CONCERN
+  WILDLIFE_CONCERN
+  COMMON_PROPERTY_MAINTENANCE
+  LANDSCAPING_ISSUE
+  NOISE_COMPLAINT
+  RULE_VIOLATION
+}
+
+enum IssueStatus {
+  SUBMITTED
+  ACKNOWLEDGED
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum NoticeCategory {
+  WATER_NOTICES
+  SECURITY_ALERTS
+  ROAD_CLOSURES
+  MAINTENANCE_NOTICES
+  AGM_NOTICES
+  COMMUNITY_UPDATES
+}
+
+enum ContractorStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum RegistrationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum MessageStatus {
+  NEW
+  READ
+  ARCHIVED
+}
+
+// ----------------------------------------------------------------------------
+// Auth / Users
+// ----------------------------------------------------------------------------
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  passwordHash  String?
+  image         String?
+  role          Role      @default(VIEWER)
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts  Account[]
+  sessions  Session[]
+  auditLogs AuditLog[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ----------------------------------------------------------------------------
+// Content categories (shared taxonomy for documents, notices, faqs, kb)
+// ----------------------------------------------------------------------------
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  kind        String   @default("general") // document | faq | notice | knowledge
+  icon        String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  documents      Document[]
+  faqs           Faq[]
+  knowledgeItems KnowledgeArticle[]
+}
+
+// ----------------------------------------------------------------------------
+// Notices & Alerts
+// ----------------------------------------------------------------------------
+
+model Notice {
+  id          String         @id @default(cuid())
+  title       String
+  slug        String         @unique
+  excerpt     String?
+  body        String         @db.Text
+  category    NoticeCategory
+  pinned      Boolean        @default(false)
+  published   Boolean        @default(false)
+  publishAt   DateTime?
+  expiresAt   DateTime?
+  imageUrl    String?
+  authorName  String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([category])
+  @@index([published, publishAt])
+}
+
+// ----------------------------------------------------------------------------
+// Documents / Forms & Downloads / Document Library
+// ----------------------------------------------------------------------------
+
+model Document {
+  id            String    @id @default(cuid())
+  title         String
+  description   String?
+  fileUrl       String
+  fileName      String
+  fileSize      Int       @default(0)
+  mimeType      String    @default("application/pdf")
+  categoryId    String?
+  category      Category? @relation(fields: [categoryId], references: [id])
+  library       String    @default("forms") // forms | library | rules
+  featured      Boolean   @default(false)
+  published     Boolean   @default(true)
+  downloadCount Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([library])
+  @@index([categoryId])
+}
+
+// ----------------------------------------------------------------------------
+// FAQs
+// ----------------------------------------------------------------------------
+
+model Faq {
+  id         String    @id @default(cuid())
+  question   String
+  answer     String    @db.Text
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+  featured   Boolean   @default(false)
+  published  Boolean   @default(true)
+  order      Int       @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([categoryId])
+}
+
+// ----------------------------------------------------------------------------
+// Self Help Centre knowledge base
+// ----------------------------------------------------------------------------
+
+model KnowledgeArticle {
+  id         String    @id @default(cuid())
+  title      String
+  slug       String    @unique
+  summary    String?
+  body       String    @db.Text
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+  tags       String[]  @default([])
+  published  Boolean   @default(true)
+  order      Int       @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([categoryId])
+}
+
+// ----------------------------------------------------------------------------
+// Issue reports
+// ----------------------------------------------------------------------------
+
+model IssueReport {
+  id             String        @id @default(cuid())
+  reference      String        @unique
+  name           String
+  email          String?
+  phone          String?
+  propertyNumber String
+  category       IssueCategory
+  description    String        @db.Text
+  status         IssueStatus   @default(SUBMITTED)
+  photos         String[]      @default([])
+  latitude       Float?
+  longitude      Float?
+  locationLabel  String?
+  adminNotes     String?       @db.Text
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([status])
+  @@index([category])
+}
+
+// ----------------------------------------------------------------------------
+// Domestic worker registration
+// ----------------------------------------------------------------------------
+
+model DomesticWorker {
+  id             String             @id @default(cuid())
+  residentName   String
+  propertyNumber String
+  workerName     String
+  idNumber       String
+  contactNumber  String
+  photoUrl       String?
+  status         RegistrationStatus @default(PENDING)
+  notes          String?            @db.Text
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@index([status])
+}
+
+// ----------------------------------------------------------------------------
+// Contractor registration
+// ----------------------------------------------------------------------------
+
+model Contractor {
+  id            String           @id @default(cuid())
+  companyName   String
+  contactPerson String
+  contactEmail  String?
+  contactPhone  String?
+  vehicleDetails String?
+  staffList     String?          @db.Text
+  workStartDate DateTime?
+  workEndDate   DateTime?
+  documents     String[]         @default([])
+  status        ContractorStatus @default(PENDING)
+  notes         String?          @db.Text
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@index([status])
+  @@index([companyName])
+}
+
+// ----------------------------------------------------------------------------
+// Contact messages
+// ----------------------------------------------------------------------------
+
+model ContactMessage {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String        @db.Text
+  status    MessageStatus @default(NEW)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([status])
+}
+
+// ----------------------------------------------------------------------------
+// Emergency contacts (managed)
+// ----------------------------------------------------------------------------
+
+model EmergencyContact {
+  id          String   @id @default(cuid())
+  category    String // Estate Security | Medical | Fire Department | Municipal Services | Telecommunications | HOA After Hours
+  name        String
+  phone       String
+  description String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+}
+
+// ----------------------------------------------------------------------------
+// Site settings (key/value JSON)
+// ----------------------------------------------------------------------------
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ----------------------------------------------------------------------------
+// Audit logs
+// ----------------------------------------------------------------------------
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  entity    String
+  entityId  String?
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([entity])
+  @@index([createdAt])
+}

@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+
+    /* Primary = estate green #1F5A45 */
+    --primary: 156 49% 24%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary = soft estate grey */
+    --secondary: 210 17% 98%;
+    --secondary-foreground: 156 49% 18%;
+
+    --muted: 210 17% 96%;
+    --muted-foreground: 0 0% 40%;
+
+    /* Accent = gold #C6A664 */
+    --accent: 42 44% 59%;
+    --accent-foreground: 0 0% 10%;
+
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 16% 90%;
+    --input: 210 16% 88%;
+    --ring: 156 49% 24%;
+
+    --radius: 0.65rem;
+  }
+
+  .dark {
+    --background: 156 30% 7%;
+    --foreground: 0 0% 96%;
+
+    --card: 156 26% 10%;
+    --card-foreground: 0 0% 96%;
+
+    --popover: 156 26% 10%;
+    --popover-foreground: 0 0% 96%;
+
+    --primary: 156 40% 42%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 156 18% 16%;
+    --secondary-foreground: 0 0% 96%;
+
+    --muted: 156 16% 16%;
+    --muted-foreground: 0 0% 65%;
+
+    --accent: 46 65% 52%;
+    --accent-foreground: 0 0% 10%;
+
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 156 16% 20%;
+    --input: 156 16% 22%;
+    --ring: 46 65% 52%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  h1, h2, h3, h4, h5 {
+    @apply font-serif tracking-tight;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .container-padded {
+    @apply container px-5 sm:px-6 lg:px-8;
+  }
+  /* Subtle gold gradient used on luxury headings / dividers */
+  .gold-divider {
+    background: linear-gradient(90deg, transparent, #c6a664, #d4af37, transparent);
+  }
+  .estate-gradient {
+    background: linear-gradient(135deg, #1f5a45 0%, #15402f 100%);
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
