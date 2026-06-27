@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: simola
+      POSTGRES_PASSWORD: simola
+      POSTGRES_DB: simola
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U simola"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql://simola:simola@db:5432/simola?schema=public"
+      AUTH_SECRET: "${AUTH_SECRET:-please-change-this-to-a-long-random-string}"
+      AUTH_URL: "${AUTH_URL:-http://localhost:3000}"
+      NEXTAUTH_URL: "${AUTH_URL:-http://localhost:3000}"
+      NEXT_PUBLIC_SITE_URL: "${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}"
+      SEED_ADMIN_EMAIL: "${SEED_ADMIN_EMAIL:-admin@simolahoa.co.za}"
+      SEED_ADMIN_PASSWORD: "${SEED_ADMIN_PASSWORD:-ChangeMe123!}"
+      CREATE_ADMIN: "true"
+      UPLOAD_DIR: "public/uploads"
+      MAX_UPLOAD_MB: "10"
+    ports:
+      - "3000:3000"
+    volumes:
+      - uploads:/app/public/uploads
+
+volumes:
+  db-data:
+  uploads:
