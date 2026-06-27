@@ -25,8 +25,10 @@ export async function sendEmail({ to, subject, text, html }: MailInput) {
   // Real delivery is intentionally left as an integration point. To enable,
   // install `nodemailer` and create a transport from the SMTP_* env vars here.
   try {
-    // Dynamic import keeps nodemailer optional.
-    const nodemailer = await import("nodemailer").catch(() => null);
+    // Dynamic import keeps nodemailer optional (not a hard dependency).
+    // The specifier is computed so the bundler/type-checker does not require it.
+    const moduleName = ["node", "mailer"].join("");
+    const nodemailer: any = await import(/* webpackIgnore: true */ moduleName).catch(() => null);
     if (!nodemailer) {
       console.warn("[email] nodemailer not installed; skipping real delivery.");
       return { delivered: false as const };
