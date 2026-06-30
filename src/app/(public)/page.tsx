@@ -26,15 +26,11 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-export const dynamic = "force-dynamic";
-
-export default async function HomePage() {
-  const [notices, emergency, forms, faqs] = await Promise.all([
-    getLatestNotices(3),
-    getEmergencyContacts(),
-    getDocuments("forms"),
-    getFaqs(),
-  ]);
+export default function HomePage() {
+  const notices = getLatestNotices(3);
+  const emergency = getEmergencyContacts();
+  const forms = getDocuments("forms");
+  const faqs = getFaqs();
 
   const topEmergency = ["Estate Security", "Medical", "Fire Department"]
     .map((cat) => emergency.find((e) => e.category === cat))
@@ -98,7 +94,7 @@ export default async function HomePage() {
             <h2 className="text-3xl font-bold md:text-4xl">Estate living, beautifully managed</h2>
             <p className="mt-4 text-muted-foreground">
               Nestled in the hills above Knysna, Simola is a sanctuary of natural beauty, security and
-              community. This resident portal brings everything you need into one elegant, easy-to-use
+              community. This app brings everything you need into one elegant, easy-to-use
               place — whether you're reporting a fault at 2am or downloading a building application.
             </p>
             <div className="mt-6 grid gap-4 sm:grid-cols-3">

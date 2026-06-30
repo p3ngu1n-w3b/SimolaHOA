@@ -34,12 +34,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# prisma
-prisma/*.db
-
-# uploads (local dev storage)
-/public/uploads/*
-!/public/uploads/.gitkeep
-
 # netlify
 .netlify

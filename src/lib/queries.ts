@@ -1,4 +1,11 @@
-import { prisma, safeQuery } from "@/lib/prisma";
+// Static content access layer.
+//
+// This site has NO database, NO CMS and NO admin. All content lives in
+// `src/lib/content.ts` and is updated manually by the developers. These helper
+// functions simply normalise that static content into the shapes the pages
+// consume, so every page can be statically pre-rendered (great for offline /
+// PWA caching).
+
 import {
   EMERGENCY_CONTACTS,
   FAQS,
@@ -6,135 +13,124 @@ import {
   NOTICES,
   DOCUMENTS,
 } from "@/lib/content";
+import { slugify } from "@/lib/utils";
 
-// These queries gracefully fall back to static default content when the DB is
-// unavailable, so the public site and `next build` never hard-fail.
+export type EmergencyContactItem = {
+  id: string;
+  category: string;
+  name: string;
+  phone: string;
+  description: string;
+  order: number;
+};
 
-export async function getEmergencyContacts() {
-  const rows = await safeQuery(
-    () => prisma.emergencyContact.findMany({ orderBy: [{ category: "asc" }, { order: "asc" }] }),
-    []
-  );
-  if (rows.length) return rows;
-  return EMERGENCY_CONTACTS.map((c, i) => ({ id: `fallback-${i}`, ...c, createdAt: new Date(), updatedAt: new Date() }));
+export type NoticeItem = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  body: string;
+  category: string;
+  pinned: boolean;
+  publishAt: string | null;
+  createdAt: string;
+  authorName: string | null;
+};
+
+export type FaqItem = {
+  id: string;
+  question: string;
+  answer: string;
+  featured: boolean;
+  category: { name: string } | null;
+};
+
+export type KnowledgeItem = {
+  id: string;
+  title: string;
+  slug: string;
+  summary: string | null;
+  body: string;
+  tags: string[];
+  category: { name: string } | null;
+};
+
+export type DocumentItem = {
+  id: string;
+  title: string;
+  description: string | null;
+  fileUrl: string;
+  fileName: string;
+  fileSize: number;
+  mimeType: string;
+  featured: boolean;
+  downloadCount: number;
+  category: { name: string } | null;
+};
+
+export function getEmergencyContacts(): EmergencyContactItem[] {
+  return EMERGENCY_CONTACTS.map((c, i) => ({ id: `ec-${i}`, ...c }));
 }
 
-export async function getPublishedNotices(opts?: { category?: string; query?: string }) {
-  const now = new Date();
-  const rows = await safeQuery(
-    () =>
-      prisma.notice.findMany({
-        where: {
-          published: true,
-          OR: [{ publishAt: null }, { publishAt: { lte: now } }],
-          ...(opts?.category ? { category: opts.category as never } : {}),
-          ...(opts?.query
-            ? { OR: [{ title: { contains: opts.query, mode: "insensitive" } }, { body: { contains: opts.query, mode: "insensitive" } }] }
-            : {}),
-        },
-        orderBy: [{ pinned: "desc" }, { publishAt: "desc" }, { createdAt: "desc" }],
-      }),
-    []
-  );
-  if (rows.length) return rows;
-  return NOTICES.filter((n) => {
-    if (opts?.category && n.category !== opts.category) return false;
-    if (opts?.query) {
-      const q = opts.query.toLowerCase();
-      return n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q);
-    }
-    return true;
-  }).map((n, i) => ({
-    id: `fallback-${i}`,
-    slug: n.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+export function getPublishedNotices(): NoticeItem[] {
+  return NOTICES.map((n, i) => ({
+    id: `n-${i}`,
+    slug: slugify(n.title),
     title: n.title,
-    excerpt: n.excerpt,
+    excerpt: n.excerpt ?? null,
     body: n.body,
-    category: n.category as never,
+    category: n.category,
     pinned: n.pinned,
-    published: true,
-    publishAt: new Date(),
-    expiresAt: null,
-    imageUrl: null,
+    publishAt: null,
+    createdAt: new Date().toISOString(),
     authorName: "Estate Office",
-    createdAt: new Date(),
-    updatedAt: new Date(),
   }));
 }
 
-export async function getLatestNotices(limit = 3) {
-  const all = await getPublishedNotices();
-  return all.slice(0, limit);
+export function getLatestNotices(limit = 3): NoticeItem[] {
+  const all = getPublishedNotices();
+  const pinned = all.filter((n) => n.pinned);
+  const rest = all.filter((n) => !n.pinned);
+  return [...pinned, ...rest].slice(0, limit);
 }
 
-export async function getFaqs() {
-  const rows = await safeQuery(
-    () => prisma.faq.findMany({ where: { published: true }, include: { category: true }, orderBy: [{ order: "asc" }] }),
-    []
-  );
-  if (rows.length) return rows;
+export function getNoticeBySlug(slug: string): NoticeItem | undefined {
+  return getPublishedNotices().find((n) => n.slug === slug);
+}
+
+export function getFaqs(): FaqItem[] {
   return FAQS.map((f, i) => ({
-    id: `fallback-${i}`,
+    id: `faq-${i}`,
     question: f.question,
     answer: f.answer,
     featured: f.featured ?? false,
-    published: true,
-    order: i,
-    categoryId: null,
-    category: { id: f.category, name: f.category, slug: f.category.toLowerCase(), description: null, kind: "faq", icon: null, order: 0, createdAt: new Date(), updatedAt: new Date() },
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    category: { name: f.category },
   }));
 }
 
-export async function getKnowledgeArticles() {
-  const rows = await safeQuery(
-    () => prisma.knowledgeArticle.findMany({ where: { published: true }, include: { category: true }, orderBy: [{ order: "asc" }] }),
-    []
-  );
-  if (rows.length) return rows;
+export function getKnowledgeArticles(): KnowledgeItem[] {
   return KNOWLEDGE.map((k, i) => ({
-    id: `fallback-${i}`,
+    id: `kb-${i}`,
     title: k.title,
-    slug: k.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-    summary: k.summary,
+    slug: slugify(k.title),
+    summary: k.summary ?? null,
     body: k.body,
     tags: k.tags ?? [],
-    published: true,
-    order: i,
-    categoryId: null,
-    category: { id: k.category, name: k.category, slug: k.category.toLowerCase(), description: null, kind: "knowledge", icon: null, order: 0, createdAt: new Date(), updatedAt: new Date() },
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    category: { name: k.category },
   }));
 }
 
-export async function getDocuments(library?: "forms" | "library") {
-  const rows = await safeQuery(
-    () =>
-      prisma.document.findMany({
-        where: { published: true, ...(library ? { library } : {}) },
-        include: { category: true },
-        orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
-      }),
-    []
-  );
-  if (rows.length) return rows;
+export function getDocuments(library?: "forms" | "library"): DocumentItem[] {
   return DOCUMENTS.filter((d) => (library ? d.library === library : true)).map((d, i) => ({
-    id: `fallback-${i}`,
+    id: `doc-${i}`,
     title: d.title,
-    description: d.description,
-    fileUrl: "#",
+    description: d.description ?? null,
+    fileUrl: `/docs/${d.fileName}`,
     fileName: d.fileName,
-    fileSize: 240000,
+    fileSize: 245760,
     mimeType: "application/pdf",
-    library: d.library,
     featured: d.featured,
-    published: true,
     downloadCount: 0,
-    categoryId: null,
-    category: { id: d.categorySlug, name: d.categorySlug, slug: d.categorySlug, description: null, kind: "document", icon: null, order: 0, createdAt: new Date(), updatedAt: new Date() },
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    category: { name: d.categorySlug.replace(/-/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()) },
   }));
 }

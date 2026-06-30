@@ -3,15 +3,13 @@ import { PageHeader } from "@/components/site/page-header";
 import { FaqExplorer } from "@/components/site/faq-explorer";
 import { getFaqs } from "@/lib/queries";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "FAQs",
   description: "Answers to frequently asked questions about security, building, pets, refuse and access at Simola Estate.",
 };
 
-export default async function FaqsPage() {
-  const faqs = await getFaqs();
+export default function FaqsPage() {
+  const faqs = getFaqs();
   return (
     <>
       <PageHeader

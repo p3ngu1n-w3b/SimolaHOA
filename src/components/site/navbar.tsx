@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, PhoneCall, ShieldCheck, ChevronDown } from "lucide-react";
+import { Menu, PhoneCall, ChevronDown } from "lucide-react";
 import { NAV_ITEMS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -113,14 +113,6 @@ export function Navbar() {
                     </Link>
                   );
                 })}
-                <Link
-                  href="/admin"
-                  onClick={() => setOpen(false)}
-                  className="mt-2 flex items-center gap-3 rounded-lg border px-3 py-3 text-sm font-medium text-muted-foreground hover:bg-muted"
-                >
-                  <ShieldCheck className="h-5 w-5 text-estate-gold" />
-                  Admin Portal
-                </Link>
               </nav>
             </SheetContent>
           </Sheet>

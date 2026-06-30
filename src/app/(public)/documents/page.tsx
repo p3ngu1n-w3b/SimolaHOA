@@ -3,16 +3,14 @@ import { PageHeader } from "@/components/site/page-header";
 import { DocumentExplorer } from "@/components/site/document-explorer";
 import { getDocuments } from "@/lib/queries";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Document Library",
   description: "The complete Simola Estate document archive — governance, rules, guidelines and meeting minutes.",
 };
 
-export default async function DocumentLibraryPage() {
-  const forms = await getDocuments("forms");
-  const library = await getDocuments("library");
+export default function DocumentLibraryPage() {
+  const forms = getDocuments("forms");
+  const library = getDocuments("library");
   const documents = [...library, ...forms];
   return (
     <>

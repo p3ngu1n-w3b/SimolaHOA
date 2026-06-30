@@ -8,15 +8,13 @@ import { Reveal } from "@/components/site/reveal";
 import { getEmergencyContacts } from "@/lib/queries";
 import { EMERGENCY_CATEGORIES } from "@/lib/constants";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Emergency Contacts",
   description: "One-touch emergency contact numbers for Simola Estate — security, medical, fire, municipal and after-hours.",
 };
 
-export default async function EmergencyContactsPage() {
-  const contacts = await getEmergencyContacts();
+export default function EmergencyContactsPage() {
+  const contacts = getEmergencyContacts();
   const grouped = EMERGENCY_CATEGORIES.map((cat) => ({
     category: cat,
     items: contacts.filter((c) => c.category === cat),

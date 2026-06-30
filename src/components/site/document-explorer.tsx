@@ -14,7 +14,6 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { formatBytes } from "@/lib/utils";
-import { trackDownload } from "@/app/actions/public";
 
 type Doc = {
   id: string;
@@ -49,10 +48,6 @@ export function DocumentExplorer({ documents }: { documents: Doc[] }) {
       return matchCat && matchQ;
     });
   }, [documents, query, active]);
-
-  const handleDownload = (doc: Doc) => {
-    void trackDownload(doc.id);
-  };
 
   return (
     <div className="space-y-6">
@@ -96,7 +91,7 @@ export function DocumentExplorer({ documents }: { documents: Doc[] }) {
                   <Button size="sm" variant="outline" className="flex-1" onClick={() => setPreview(d)}>
                     <Eye className="h-4 w-4" /> Preview
                   </Button>
-                  <Button asChild size="sm" className="flex-1" onClick={() => handleDownload(d)}>
+                  <Button asChild size="sm" className="flex-1">
                     <a href={d.fileUrl} download={d.fileName} target="_blank" rel="noopener noreferrer">
                       <Download className="h-4 w-4" /> Download
                     </a>
@@ -127,7 +122,7 @@ export function DocumentExplorer({ documents }: { documents: Doc[] }) {
                   <span className="text-xs">Download to view the full document.</span>
                 </div>
               )}
-              <Button asChild className="w-full" onClick={() => handleDownload(preview)}>
+              <Button asChild className="w-full">
                 <a href={preview.fileUrl} download={preview.fileName} target="_blank" rel="noopener noreferrer">
                   <Download className="h-4 w-4" /> Download {preview.fileName}
                 </a>

@@ -6,7 +6,7 @@ export const WELCOME = {
     name: "Johan van der Merwe",
     title: "Chairman, Simola HOA",
     message:
-      "On behalf of the Board of Trustees, it is my privilege to welcome you to Simola Estate. Our community is built on a shared commitment to security, environmental stewardship, and the kind of gracious estate living that makes Simola one of the Garden Route's most sought-after addresses. This portal is your single point of contact for everything estate-related — please make full use of it, and never hesitate to reach out to the office.",
+      "On behalf of the Board of Trustees, it is my privilege to welcome you to Simola Estate. Our community is built on a shared commitment to security, environmental stewardship, and the kind of gracious estate living that makes Simola one of the Garden Route's most sought-after addresses. This app is your single point of contact for everything estate-related — please make full use of it, and never hesitate to reach out to the office.",
   },
   vision:
     "To be the most admired residential estate on the Garden Route — a secure, beautifully maintained sanctuary where families thrive in harmony with the natural environment.",

@@ -1,191 +1,149 @@
-# Simola Homeowners Association — Resident Portal
+# Simola Homeowners Association — Mobile App (PWA)
 
-A modern, mobile-first resident portal and CMS for the **Simola Homeowners Association (HOA)**. It combines a premium public estate website with a secure admin portal for managing notices, documents, FAQs, issue reports and registrations.
+The official **installable mobile app** for the **Simola Homeowners Association (HOA)**. It is a fast, modern, mobile-first **Progressive Web App (PWA)** that gives residents quick access to estate information, important documents and contact details — and lets them submit a few simple forms that are emailed straight to the office.
 
-Built to feel **luxurious, trustworthy and effortless** — even for older residents on a phone.
-
----
-
-## ✨ Features
-
-**Public website**
-- Hero home page with welcome, emergency contacts, latest notices, quick access, download centre, FAQ preview & contact
-- **Emergency Contacts** with one-touch call buttons + sticky emergency FAB
-- **Report an Issue** system — photos, GPS capture, unique reference numbers, email notification & success page
-- **Rules & Guidelines** — searchable, sectioned (conduct / building / environmental / architectural)
-- **Domestic Worker** & **Contractor** registration with file uploads
-- **Self Help Centre** knowledge base — accordion UI, categories, related articles, search
-- **Notices & Alerts** — categories, pinned notices, search, scheduled publishing, detail pages
-- **Forms & Downloads** + **Document Library** — search, preview, download tracking
-- **FAQs** — featured questions, categories, search, accordion
-- **Contact** — form, office hours, WhatsApp button, Google Maps placeholder
-- Dark mode, SEO metadata, sitemap, robots.txt, web manifest, skeleton loaders, toasts, animations
-
-**Admin portal** (`/admin`)
-- Secure email/password login (NextAuth / Auth.js v5)
-- Dashboard widgets: total reports, open issues, downloads, registrations, recent activity
-- Manage Notices, Documents, FAQs, Issue Reports (status tracking), Domestic Workers, Contractors, Contact Messages, Users (roles) & Settings
-- Audit logging of admin actions
+> **This is an informational app — not a portal or management system.**
+> There is **no database, no login, no user accounts, no admin dashboard and no CMS.** All content is maintained by the developers directly in the codebase. Form submissions are delivered **via email** through Netlify Forms.
 
 ---
 
-## 🧱 Tech Stack
+## ✨ What residents can do
+
+- Open the website on their phone and **install it to the home screen** (works like a native app).
+- Launch it **full-screen**, with a splash screen and app icon.
+- Access key information **offline** (pages they've visited are cached).
+- Find **emergency contacts** with one-touch calling.
+- Read **notices & alerts**, **rules & guidelines**, **FAQs** and the **self-help centre**.
+- **Download documents** (forms, rules, guidelines, constitution, minutes).
+- Submit three simple forms — **Report an Issue**, **Domestic Worker Registration**, **Contractor Registration** — plus a **Contact** form. Every submission is emailed to the office.
+
+## 📱 PWA features
+
+- **Web App Manifest** (`app/manifest.ts` → `/manifest.webmanifest`) with name, icons, theme colour, shortcuts and standalone display.
+- **App icons** (192/512 + maskable) and **Apple touch icon**.
+- **iOS splash screens** for common device sizes.
+- **Service worker** (`public/sw.js`) — precaches the app shell, serves visited pages offline (network-first), caches static assets (stale-while-revalidate) and shows an **offline fallback page**.
+- **Custom install prompt** that captures `beforeinstallprompt` on Android/Chrome and shows **“Add to Home Screen” instructions** for both iOS (Safari) and Android (Chrome).
+- **Mobile splash / status bar** meta for iOS standalone mode.
+
+## 🧱 Tech stack
 
 | Concern | Choice |
 | --- | --- |
-| Framework | **Next.js 15** (App Router) + React 18 |
+| Framework | **Next.js 15** (App Router), fully statically pre-rendered |
 | Language | **TypeScript** |
 | Styling | **TailwindCSS** + shadcn/ui (Radix primitives) |
-| Forms | **React Hook Form** + **Zod** |
+| Forms | **React Hook Form** + **Zod** (client validation) → **Netlify Forms** (email) |
 | Animation | **Framer Motion** |
 | Icons | **Lucide** |
-| Database | **PostgreSQL** + **Prisma ORM** |
-| Auth | **NextAuth / Auth.js v5** (credentials) |
-| State | **Zustand** (available for client state) |
-| Uploads | Self-hosted file storage (`/public/uploads`) — UploadThing-style abstraction in `src/lib/upload.ts` |
-| Notifications | Toasts via **Sonner**; email via optional SMTP (falls back to console) |
+| PWA | Hand-rolled service worker + Web App Manifest |
 
-Brand palette: Primary Green `#1F5A45`, Secondary Gold `#C6A664`, Accent Gold `#D4AF37`. Headings in **Playfair Display**, body in **Inter**.
+**No** Prisma, PostgreSQL, Supabase, Firebase, authentication, sessions, user management or API auth — by design.
+
+Brand: Primary Green `#1F5A45`, Secondary Gold `#C6A664`, Accent Gold `#D4AF37`. Headings in **Playfair Display**, body in **Inter**.
 
 ---
 
-## 🚀 Getting Started (local)
+## 📨 How the forms work (Netlify Forms)
 
-### Prerequisites
-- Node.js 20+ (22 recommended)
-- A PostgreSQL database
+All forms submit directly to **Netlify Forms**, which captures the submission and **emails it** — no server code, no database.
 
-### 1. Install dependencies
+- A static skeleton of every form lives in [`public/__forms.html`](public/__forms.html) so Netlify can detect the forms at build time.
+- The React components validate input, then `POST` a `FormData` payload to `/__forms.html` (see `src/lib/submit-form.ts`).
+- File uploads (issue photos, contractor documents, worker photo) are supported — one file per field, 8 MB max each.
+
+**To receive submissions by email** (one-time setup in the Netlify dashboard):
+1. Deploy the site (forms are auto-detected on the first deploy).
+2. Go to **Site configuration → Forms → Form notifications**.
+3. Add an **email notification** pointing to the office inbox for each form (`contact`, `report-an-issue`, `domestic-worker-registration`, `contractor-registration`).
+
+Spam is filtered automatically (Akismet + honeypot field).
+
+---
+
+## 🚀 Getting started (local)
+
 ```bash
 npm install
-```
-
-### 2. Configure environment
-```bash
-cp .env.example .env
-```
-Edit `.env` and set at least `DATABASE_URL` and `AUTH_SECRET` (generate with `openssl rand -base64 32`).
-
-### 3. Set up the database
-```bash
-npm run db:push     # create tables from the Prisma schema
-npm run db:seed     # seed categories, notices, FAQs, contacts, docs + admin user
-```
-
-### 4. Run the dev server
-```bash
 npm run dev
 ```
-Visit [http://localhost:3000](http://localhost:3000).
 
-**Admin login:** `admin@simolahoa.co.za` / `ChangeMe123!` (configurable via `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`). Go to [/admin](http://localhost:3000/admin).
+Visit [http://localhost:3000](http://localhost:3000). No environment variables are required for local development.
 
-> The public site is resilient: if the database is unavailable, pages gracefully fall back to built-in default content so the site never hard-fails.
+> Netlify Forms only process submissions on a deployed Netlify site, so form **delivery** is verified after deploy. Locally, the forms validate and show success/empty-state UI.
 
----
+### Useful scripts
 
-## 🐳 Docker
-
-A multi-stage production image and a Compose stack (app + Postgres) are included.
-
-```bash
-# Build & run the full stack (Postgres + app)
-AUTH_SECRET="$(openssl rand -base64 32)" docker compose up --build
-```
-
-The container entrypoint automatically applies the schema (`prisma db push`) and ensures an admin user exists on first boot. App available on [http://localhost:3000](http://localhost:3000).
-
-To seed full demo content inside Docker:
-```bash
-docker compose exec app node scripts/create-admin.mjs   # admin + settings only
-```
-(For the complete content seed, run `npm run db:seed` against the database from a dev environment.)
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the dev server |
+| `npm run build` | Production build (fully static) |
+| `npm run start` | Serve the production build |
+| `npm run lint` | Lint |
+| `npm run generate:icons` | Regenerate PWA icons + iOS splash screens (uses `sharp`) |
+| `npm run generate:docs` | Regenerate placeholder document PDFs |
 
 ---
 
 ## ☁️ Deploy to Netlify
 
-`netlify.toml` is preconfigured with the official Next.js runtime. Set these environment variables in the Netlify dashboard:
+`netlify.toml` is preconfigured with the official Next.js runtime.
 
-- `DATABASE_URL` — your managed Postgres connection string
-- `AUTH_SECRET` — long random string
-- `NEXT_PUBLIC_SITE_URL` — your production URL
-- `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`
+1. Connect the repository in Netlify (or `npx netlify deploy`).
+2. Set `NEXT_PUBLIC_SITE_URL` to your production URL (used for SEO/sitemap).
+3. After the first deploy, configure **Form notifications** (see above) so submissions are emailed.
 
-The build runs `prisma db push` to sync the schema. Run the seed once from your machine (pointed at the production DB) to create the admin user and demo content.
+That's the entire setup — no database to provision, no secrets to manage.
 
 ---
 
-## 📜 Scripts
+## 🗂️ Updating content
 
-| Command | Description |
+All content is static and edited by developers:
+
+| Content | Where |
 | --- | --- |
-| `npm run dev` | Start the dev server |
-| `npm run build` | Generate Prisma client + production build |
-| `npm run start` | Start the production server |
-| `npm run lint` | Lint |
-| `npm run db:push` | Push schema to the database |
-| `npm run db:migrate` | Create a migration (dev) |
-| `npm run db:seed` | Seed demo data + admin user |
-| `npm run db:studio` | Open Prisma Studio |
+| Emergency contacts, notices, FAQs, self-help articles, rules, document list, welcome text | `src/lib/content.ts` |
+| Navigation, site details (phone, email, WhatsApp, address, hours) | `src/lib/constants.ts` |
+| Downloadable documents | drop the real PDFs into `public/docs/` (filenames match `content.ts`) |
+| Images | placeholder Unsplash URLs in `src/lib/constants.ts` (swap for hosted images) |
 
 ---
 
-## 🗂️ Project Structure
+## 🗂️ Project structure
 
 ```
-prisma/
-  schema.prisma        # All models: User, Notice, Category, Document, Faq,
-                       # KnowledgeArticle, IssueReport, DomesticWorker,
-                       # Contractor, ContactMessage, EmergencyContact,
-                       # Setting, AuditLog (+ Auth tables)
-  seed.ts              # Demo data + admin user
+public/
+  __forms.html          # Netlify Forms detection skeleton (all forms)
+  sw.js                 # Service worker (offline + caching)
+  icons/                # App icons + iOS splash screens
+  docs/                 # Downloadable PDFs (placeholders)
 scripts/
-  create-admin.mjs     # Plain-Node admin bootstrap (Docker)
+  generate-icons.mjs    # Build PWA icons & splash screens
+  generate-docs.mjs     # Build placeholder PDFs
 src/
   app/
-    (public)/          # Public website (route group with shared layout)
-    admin/             # Admin portal (login + dashboard route group)
-    actions/           # Server actions (public forms, admin CRUD, auth)
-    api/auth/          # NextAuth route handler
-    sitemap.ts robots.ts manifest.ts
+    (public)/           # All informational pages + forms (static)
+    offline/            # Offline fallback page
+    layout.tsx          # PWA metadata (manifest, icons, splash) + SW register
+    manifest.ts sitemap.ts robots.ts
   components/
-    ui/                # shadcn/ui component library
-    site/              # Navbar, footer, explorers, page header, etc.
-    admin/             # Admin tables, managers, widgets
-    forms/             # Issue / registration / contact forms
-  lib/                 # prisma, auth, validations, queries, content,
-                       # upload, email, constants, utils
+    ui/                 # shadcn/ui components
+    site/               # Navbar, footer, explorers, emergency FAB, etc.
+    forms/              # Issue / registration / contact forms (Netlify Forms)
+    pwa/                # Service worker registration + install prompt
+  lib/                  # content, constants, queries (static), validations,
+                        # submit-form, utils
 ```
 
 ---
 
-## 🔐 Database Models
+## ♿ Accessibility & performance
 
-`User`, `Account`, `Session`, `VerificationToken`, `Category`, `Notice`, `Document`, `Faq`, `KnowledgeArticle`, `IssueReport`, `DomesticWorker`, `Contractor`, `ContactMessage`, `EmergencyContact`, `Setting`, `AuditLog`.
-
----
-
-## 🖼️ Images
-
-Placeholder estate/lifestyle/nature/security/golf imagery is loaded from Unsplash (see `src/lib/constants.ts`) and can be replaced via the admin portal / CMS. Remote hosts are allow-listed in `next.config.mjs`.
-
----
-
-## ♿ Accessibility & Performance
-
-- Semantic HTML, ARIA labels, keyboard-friendly Radix components
-- Respects `prefers-reduced-motion`
-- Optimised fonts (`next/font`) and images (`next/image`)
-- Mobile-first, fully responsive, WCAG-minded colour contrast
-
----
-
-## 📝 Notes
-
-- **Email:** configure `SMTP_*` env vars and install `nodemailer` to enable real delivery; otherwise notifications are logged to the server console.
-- **Uploads:** stored on local disk by default (`/public/uploads`). For serverless/multi-instance deploys, swap `src/lib/upload.ts` for object storage (e.g. Netlify Blobs, S3, UploadThing).
-- Change the seeded admin password immediately in any real deployment.
+- Fully static pages → fast first load and great offline behaviour.
+- Semantic HTML, ARIA labels, keyboard-friendly Radix components, `prefers-reduced-motion` support.
+- Optimised fonts (`next/font`) and images (`next/image`).
+- Mobile-first, responsive, WCAG-minded colour contrast, dark mode.
 
 ---
 

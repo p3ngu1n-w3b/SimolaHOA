@@ -106,7 +106,7 @@ export default function WelcomePage() {
                   <div>
                     <MapPin className="mx-auto mb-2 h-8 w-8 text-estate-gold" />
                     Estate map placeholder
-                    <p className="mt-1 text-xs">Upload the official estate map via the admin portal.</p>
+                    <p className="mt-1 text-xs">The official estate map will be published here.</p>
                   </div>
                 </div>
               </CardContent>

@@ -19,7 +19,7 @@ export const SITE = {
   fullName: "Simola Homeowners Association",
   tagline: "Estate living, beautifully managed.",
   description:
-    "The official resident portal of the Simola Homeowners Association — emergency contacts, notices, rules, registrations, downloads and support, all in one place.",
+    "The official mobile app of the Simola Homeowners Association — emergency contacts, notices, rules, registrations, downloads and estate information, all in one place.",
   email: "office@simolahoa.co.za",
   phone: "+27 44 302 9700",
   whatsapp: "+27 82 000 0000",

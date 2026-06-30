@@ -36,11 +36,6 @@ export function Footer() {
                 </Link>
               </li>
             ))}
-            <li>
-              <Link href="/admin" className="transition-colors hover:text-estate-gold">
-                Admin Portal
-              </Link>
-            </li>
           </ul>
         </div>
 

@@ -4,15 +4,12 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, CalendarDays, Pin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getPublishedNotices } from "@/lib/queries";
+import { getNoticeBySlug, getPublishedNotices } from "@/lib/queries";
 import { NOTICE_CATEGORIES } from "@/lib/constants";
 import { formatDate, humanize } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
-
-async function findNotice(slug: string) {
-  const notices = await getPublishedNotices();
-  return notices.find((n) => n.slug === slug);
+export function generateStaticParams() {
+  return getPublishedNotices().map((n) => ({ slug: n.slug }));
 }
 
 export async function generateMetadata({
@@ -21,7 +18,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const notice = await findNotice(slug);
+  const notice = getNoticeBySlug(slug);
   if (!notice) return { title: "Notice not found" };
   return {
     title: notice.title,
@@ -35,7 +32,7 @@ export default async function NoticeDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const notice = await findNotice(slug);
+  const notice = getNoticeBySlug(slug);
   if (!notice) notFound();
 
   const label =

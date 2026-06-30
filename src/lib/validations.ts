@@ -55,36 +55,4 @@ export const contactSchema = z.object({
 });
 export type ContactInput = z.infer<typeof contactSchema>;
 
-export const loginSchema = z.object({
-  email: z.string().email("Enter a valid email"),
-  password: z.string().min(1, "Password is required"),
-});
-export type LoginInput = z.infer<typeof loginSchema>;
 
-// Admin content schemas
-export const noticeSchema = z.object({
-  title: z.string().min(3).max(200),
-  excerpt: z.string().max(300).optional().or(z.literal("")),
-  body: z.string().min(10),
-  category: z.enum([
-    "WATER_NOTICES",
-    "SECURITY_ALERTS",
-    "ROAD_CLOSURES",
-    "MAINTENANCE_NOTICES",
-    "AGM_NOTICES",
-    "COMMUNITY_UPDATES",
-  ]),
-  pinned: z.boolean().default(false),
-  published: z.boolean().default(true),
-  publishAt: z.string().optional().or(z.literal("")),
-});
-export type NoticeInput = z.infer<typeof noticeSchema>;
-
-export const faqSchema = z.object({
-  question: z.string().min(3).max(300),
-  answer: z.string().min(3),
-  categoryName: z.string().min(1).max(80),
-  featured: z.boolean().default(false),
-  published: z.boolean().default(true),
-});
-export type FaqInput = z.infer<typeof faqSchema>;

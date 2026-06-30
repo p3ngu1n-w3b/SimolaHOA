@@ -3,7 +3,13 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
+import { ServiceWorkerRegister } from "@/components/pwa/sw-register";
 import { SITE } from "@/lib/constants";
+
+const splash = (file: string, w: number, h: number, ratio: number) => ({
+  url: `/icons/${file}`,
+  media: `(device-width: ${w}px) and (device-height: ${h}px) and (-webkit-device-pixel-ratio: ${ratio}) and (orientation: portrait)`,
+});
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,17 +32,40 @@ export const metadata: Metadata = {
     template: `%s | ${SITE.name}`,
   },
   description: SITE.description,
+  applicationName: SITE.name,
   keywords: [
     "Simola",
     "HOA",
     "Homeowners Association",
     "estate",
     "Knysna",
-    "resident portal",
     "estate notices",
     "estate rules",
+    "emergency contacts",
   ],
   authors: [{ name: SITE.fullName }],
+  appleWebApp: {
+    capable: true,
+    title: SITE.name,
+    statusBarStyle: "black-translucent",
+    startupImage: [
+      splash("splash-1170x2532.png", 390, 844, 3),
+      splash("splash-1284x2778.png", 428, 926, 3),
+      splash("splash-1125x2436.png", 375, 812, 3),
+      splash("splash-828x1792.png", 414, 896, 2),
+      splash("splash-750x1334.png", 375, 667, 2),
+      splash("splash-1242x2208.png", 414, 736, 3),
+      splash("splash-1536x2048.png", 768, 1024, 2),
+    ],
+  },
+  icons: {
+    icon: [
+      { url: "/icons/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
+  },
   openGraph: {
     type: "website",
     title: `${SITE.fullName} | Resident Portal`,
@@ -73,6 +102,7 @@ export default function RootLayout({
         <Providers>
           {children}
           <Toaster richColors closeButton />
+          <ServiceWorkerRegister />
         </Providers>
       </body>
     </html>

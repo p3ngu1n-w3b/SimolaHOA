@@ -3,15 +3,13 @@ import { PageHeader } from "@/components/site/page-header";
 import { NoticesExplorer } from "@/components/site/notices-explorer";
 import { getPublishedNotices } from "@/lib/queries";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Notices & Alerts",
   description: "The latest notices and alerts from the Simola Homeowners Association — water, security, roads, maintenance, AGM and community updates.",
 };
 
-export default async function NoticesPage() {
-  const notices = await getPublishedNotices();
+export default function NoticesPage() {
+  const notices = getPublishedNotices();
   return (
     <>
       <PageHeader

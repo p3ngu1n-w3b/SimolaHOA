@@ -3,15 +3,13 @@ import { PageHeader } from "@/components/site/page-header";
 import { DocumentExplorer } from "@/components/site/document-explorer";
 import { getDocuments } from "@/lib/queries";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Forms & Downloads",
   description: "Download estate forms — new owner, domestic worker and contractor registration, and building applications.",
 };
 
-export default async function FormsPage() {
-  const documents = await getDocuments("forms");
+export default function FormsPage() {
+  const documents = getDocuments("forms");
   return (
     <>
       <PageHeader

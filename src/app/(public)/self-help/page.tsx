@@ -3,15 +3,13 @@ import { PageHeader } from "@/components/site/page-header";
 import { SelfHelpExplorer } from "@/components/site/self-help-explorer";
 import { getKnowledgeArticles } from "@/lib/queries";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Self Help Centre",
   description: "Helpful guides for water, electricity, fibre, security, waste and biolytic systems at Simola Estate.",
 };
 
-export default async function SelfHelpPage() {
-  const articles = await getKnowledgeArticles();
+export default function SelfHelpPage() {
+  const articles = getKnowledgeArticles();
   return (
     <>
       <PageHeader

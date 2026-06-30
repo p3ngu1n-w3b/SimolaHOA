@@ -1,12 +1,20 @@
 [build]
-  command = "prisma generate && prisma db push --accept-data-loss && next build"
+  command = "next build"
   publish = ".next"
 
 [build.environment]
   NODE_VERSION = "22"
   NEXT_TELEMETRY_DISABLED = "1"
 
-# The official Next.js runtime is auto-installed by Netlify and handles
-# serverless functions, edge middleware and image optimisation.
+# The official Next.js runtime handles SSR/static rendering and image
+# optimisation. Netlify Forms detection runs automatically at deploy time
+# using the static skeleton in public/__forms.html.
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# Ensure the service worker is always revalidated and allowed root scope.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Service-Worker-Allowed = "/"

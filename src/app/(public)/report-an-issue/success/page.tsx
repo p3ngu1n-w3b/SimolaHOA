@@ -1,18 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import { CheckCircle2, Home, ClipboardCheck } from "lucide-react";
+import { CheckCircle2, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = {
+  title: "Report Submitted",
+  description: "Your issue report has been submitted to the Simola HOA office.",
+};
 
-export default async function IssueSuccessPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ ref?: string }>;
-}) {
-  const { ref } = await searchParams;
-
+export default function IssueSuccessPage() {
   return (
     <section className="container flex min-h-[70vh] items-center justify-center py-16">
       <Card className="w-full max-w-lg text-center">
@@ -22,21 +19,9 @@ export default async function IssueSuccessPage({
           </div>
           <h1 className="text-2xl font-bold">Report Submitted</h1>
           <p className="mt-2 text-muted-foreground">
-            Thank you for helping us look after the estate. The office has been notified and will be
-            in touch.
+            Thank you for helping us look after the estate. Your report has been emailed to the
+            estate office and a team member will be in touch.
           </p>
-
-          {ref && (
-            <div className="mt-6 rounded-lg border bg-muted/40 p-4">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">Your reference number</p>
-              <Badge variant="gold" className="mt-2 text-base">
-                <ClipboardCheck className="mr-1.5 h-4 w-4" /> {ref}
-              </Badge>
-              <p className="mt-2 text-xs text-muted-foreground">
-                Please quote this reference for any follow-up.
-              </p>
-            </div>
-          )}
 
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button asChild>

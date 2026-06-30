@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { MapPin, Loader2, Upload, X, Send } from "lucide-react";
 import { issueReportSchema, type IssueReportInput } from "@/lib/validations";
 import { ISSUE_CATEGORIES } from "@/lib/constants";
-import { submitIssueReport } from "@/app/actions/public";
+import { submitNetlifyForm } from "@/lib/submit-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -72,28 +72,33 @@ export function IssueReportForm() {
 
   const onFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(e.target.files ?? []);
-    setFiles((prev) => [...prev, ...selected].slice(0, 5));
+    setFiles((prev) => [...prev, ...selected].slice(0, 3));
   };
 
   const onSubmit = async (values: IssueReportInput) => {
     setPending(true);
     try {
       const fd = new FormData();
-      Object.entries(values).forEach(([k, v]) => {
-        if (v !== undefined && v !== null) fd.append(k, String(v));
-      });
-      if (coords) {
-        fd.set("latitude", String(coords.lat));
-        fd.set("longitude", String(coords.lng));
-      }
-      files.forEach((f) => fd.append("photos", f));
+      fd.append("name", values.name);
+      fd.append("email", values.email ?? "");
+      fd.append("phone", values.phone ?? "");
+      fd.append("propertyNumber", values.propertyNumber);
+      fd.append("category", values.category);
+      fd.append("description", values.description);
+      const locationLabel =
+        values.locationLabel || (coords ? `${coords.lat}, ${coords.lng}` : "");
+      fd.append("location", locationLabel);
+      // Netlify Forms accepts one file per input field.
+      if (files[0]) fd.append("photo", files[0]);
+      if (files[1]) fd.append("photo_2", files[1]);
+      if (files[2]) fd.append("photo_3", files[2]);
 
-      const res = await submitIssueReport(fd);
-      if (res.ok) {
-        toast.success(res.message);
-        router.push(`/report-an-issue/success?ref=${encodeURIComponent(res.reference ?? "")}`);
+      const ok = await submitNetlifyForm("report-an-issue", fd);
+      if (ok) {
+        toast.success("Your issue has been submitted.");
+        router.push("/report-an-issue/success");
       } else {
-        toast.error(res.message);
+        toast.error("Could not submit your report. Please try again or call the office.");
       }
     } catch {
       toast.error("Something went wrong. Please try again.");
@@ -231,7 +236,7 @@ export function IssueReportForm() {
           <FormLabel>Upload Photos</FormLabel>
           <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed bg-muted/30 px-4 py-8 text-center text-sm text-muted-foreground transition-colors hover:border-estate-gold">
             <Upload className="h-6 w-6 text-estate-gold" />
-            <span>Tap to add photos (up to 5)</span>
+            <span>Tap to add photos (up to 3, 8MB each)</span>
             <input type="file" accept="image/*" multiple className="hidden" onChange={onFiles} />
           </label>
           {files.length > 0 && (

@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Loader2, Send, CheckCircle2 } from "lucide-react";
 import { contactSchema, type ContactInput } from "@/lib/validations";
-import { submitContact } from "@/app/actions/public";
+import { submitNetlifyForm } from "@/lib/submit-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -33,13 +33,13 @@ export function ContactForm() {
     try {
       const fd = new FormData();
       Object.entries(values).forEach(([k, v]) => fd.append(k, String(v ?? "")));
-      const res = await submitContact(fd);
-      if (res.ok) {
-        toast.success(res.message);
+      const ok = await submitNetlifyForm("contact", fd);
+      if (ok) {
+        toast.success("Thank you — your message has been sent.");
         setDone(true);
         form.reset();
       } else {
-        toast.error(res.message);
+        toast.error("Could not send your message. Please try again or email us directly.");
       }
     } catch {
       toast.error("Something went wrong. Please try again.");
