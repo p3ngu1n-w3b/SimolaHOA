@@ -16,10 +16,11 @@ import {
 
 export const SITE = {
   name: "Simola HOA",
-  fullName: "Simola Homeowners Association",
+  fullName: "Simola Golf & Country Estate Homeowners' Association",
+  shortName: "Simola Golf & Country Estate",
   tagline: "Estate living, beautifully managed.",
   description:
-    "The official mobile app of the Simola Homeowners Association — emergency contacts, notices, rules, registrations, downloads and estate information, all in one place.",
+    "The official resident portal of the Simola Golf & Country Estate Homeowners' Association — emergency contacts, notices, rules, registrations, downloads and estate information, all in one place.",
   email: "office@simolahoa.co.za",
   phone: "+27 44 302 9700",
   whatsapp: "+27 82 000 0000",
@@ -112,6 +113,16 @@ export const CONTRACTOR_STATUSES = [
   { value: "REJECTED", label: "Rejected" },
   { value: "EXPIRED", label: "Expired" },
 ] as const;
+
+export const BRANDING = {
+  logo: "/branding/simola-logo.png",
+  logoWidth: 1004,
+  logoHeight: 710,
+  banner: "/branding/simola-banner.png",
+  bannerWidth: 1024,
+  bannerHeight: 215,
+  alt: "Simola Golf & Country Estate Homeowners' Association",
+} as const;
 
 // Placeholder imagery (replaceable via CMS). Uses Unsplash source.
 export const IMAGES = {

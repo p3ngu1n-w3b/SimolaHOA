@@ -1,3 +1,4 @@
+import { BrandBanner } from "@/components/site/logo";
 import { cn } from "@/lib/utils";
 
 export function PageHeader({
@@ -6,16 +7,23 @@ export function PageHeader({
   eyebrow,
   className,
   children,
+  showBrand,
 }: {
   title: string;
   description?: string;
   eyebrow?: string;
   className?: string;
   children?: React.ReactNode;
+  showBrand?: boolean;
 }) {
   return (
     <section className={cn("estate-gradient text-white", className)}>
       <div className="container py-12 md:py-16">
+        {showBrand && (
+          <div className="mb-8">
+            <BrandBanner variant="on-dark" />
+          </div>
+        )}
         {eyebrow && (
           <p className="mb-3 text-sm font-medium uppercase tracking-[0.25em] text-estate-gold">
             {eyebrow}

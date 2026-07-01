@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { Home, Compass } from "lucide-react";
+import { Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BrandMark } from "@/components/site/logo";
 
 export default function NotFound() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center estate-gradient px-4 text-center text-white">
-      <Compass className="mb-4 h-14 w-14 text-estate-gold" />
+      <BrandMark variant="on-dark" className="mb-6" />
       <p className="text-sm font-medium uppercase tracking-[0.3em] text-estate-gold">404</p>
       <h1 className="mt-2 text-4xl font-bold">Page not found</h1>
       <p className="mt-3 max-w-md text-white/80">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { WifiOff, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BrandMark } from "@/components/site/logo";
 
 export const metadata: Metadata = {
   title: "Offline",
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 export default function OfflinePage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center estate-gradient px-4 text-center text-white">
+      <BrandMark variant="on-dark" className="mb-6" />
       <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-white/10">
         <WifiOff className="h-8 w-8 text-estate-gold" />
       </div>

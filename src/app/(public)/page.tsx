@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/site/reveal";
+import { BrandBanner } from "@/components/site/logo";
 import { IMAGES, QUICK_ACCESS, SITE, NOTICE_CATEGORIES } from "@/lib/constants";
 import { getLatestNotices, getEmergencyContacts, getDocuments, getFaqs } from "@/lib/queries";
 import { formatDate, humanize, truncate } from "@/lib/utils";
@@ -53,11 +54,12 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-[#0d2c20]/90 via-[#143b2c]/75 to-[#1f5a45]/40" />
         <div className="container relative z-10 flex min-h-[78vh] flex-col justify-center py-20 text-white">
           <Reveal>
+            <BrandBanner variant="on-dark" className="mb-8" />
             <Badge variant="gold" className="mb-5 w-fit bg-estate-gold/20 text-estate-gold">
               {SITE.tagline}
             </Badge>
-            <h1 className="max-w-3xl text-balance text-4xl font-bold leading-tight md:text-6xl">
-              Welcome to the Simola Homeowners Association
+            <h1 className="max-w-3xl text-balance text-3xl font-bold leading-tight md:text-5xl">
+              Your resident portal for estate living on the Garden Route
             </h1>
             <p className="mt-5 max-w-2xl text-lg text-white/85">
               Your single destination for estate notices, emergency contacts, rules, registrations

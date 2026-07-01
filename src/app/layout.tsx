@@ -72,11 +72,20 @@ export const metadata: Metadata = {
     description: SITE.description,
     siteName: SITE.fullName,
     url: siteUrl,
+    images: [
+      {
+        url: "/branding/simola-banner.png",
+        width: 1024,
+        height: 215,
+        alt: SITE.fullName,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: SITE.fullName,
     description: SITE.description,
+    images: ["/branding/simola-banner.png"],
   },
   robots: {
     index: true,

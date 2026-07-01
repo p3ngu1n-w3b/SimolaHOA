@@ -16,6 +16,7 @@ export default function WelcomePage() {
   return (
     <>
       <PageHeader
+        showBrand
         eyebrow="Welcome to Simola"
         title="A warm welcome to our estate"
         description="Discover the vision, purpose and people behind the Simola Homeowners Association."
