@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { MapPin, Loader2, Upload, X, Send } from "lucide-react";
 import { issueReportSchema, type IssueReportInput } from "@/lib/validations";
 import { ISSUE_CATEGORIES } from "@/lib/constants";
-import { submitNetlifyForm } from "@/lib/submit-form";
+import { submitForm } from "@/lib/submit-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -88,12 +88,12 @@ export function IssueReportForm() {
       const locationLabel =
         values.locationLabel || (coords ? `${coords.lat}, ${coords.lng}` : "");
       fd.append("location", locationLabel);
-      // Netlify Forms accepts one file per input field.
+      // One file per field for the email handler.
       if (files[0]) fd.append("photo", files[0]);
       if (files[1]) fd.append("photo_2", files[1]);
       if (files[2]) fd.append("photo_3", files[2]);
 
-      const ok = await submitNetlifyForm("report-an-issue", fd);
+      const ok = await submitForm("report-an-issue", fd);
       if (ok) {
         toast.success("Your issue has been submitted.");
         router.push("/report-an-issue/success");

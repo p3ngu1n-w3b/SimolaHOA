@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Loader2, Upload, X, Send, CheckCircle2 } from "lucide-react";
 import { domesticWorkerSchema, type DomesticWorkerInput } from "@/lib/validations";
-import { submitNetlifyForm } from "@/lib/submit-form";
+import { submitForm } from "@/lib/submit-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -35,7 +35,7 @@ export function DomesticWorkerForm() {
       const fd = new FormData();
       Object.entries(values).forEach(([k, v]) => fd.append(k, String(v)));
       if (photo) fd.append("photo", photo);
-      const ok = await submitNetlifyForm("domestic-worker-registration", fd);
+      const ok = await submitForm("domestic-worker-registration", fd);
       if (ok) {
         toast.success("Domestic worker registration submitted.");
         setDone("");
