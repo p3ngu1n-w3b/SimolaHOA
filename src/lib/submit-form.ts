@@ -1,17 +1,15 @@
-// Submits a form to Netlify Forms. No server code, no database — Netlify
-// captures the submission and emails it to the configured address(es).
-//
-// For SSR/static frameworks the POST must target the static skeleton file
-// (`/__forms.html`) rather than "/", otherwise it can be intercepted before
-// reaching Netlify's form handler. We send multipart FormData (works for both
-// text-only and file uploads); the browser sets the correct Content-Type.
+// Submits a form to the cPanel/live-site email handler endpoint.
+// The endpoint must accept multipart FormData (text fields and file uploads)
+// and email submissions to the estate office inbox.
 
-export const NETLIFY_FORM_ENDPOINT = "/__forms.html";
+const FORM_EMAIL_ENDPOINT = process.env.NEXT_PUBLIC_FORM_EMAIL_ENDPOINT;
 
-export async function submitNetlifyForm(formName: string, data: FormData): Promise<boolean> {
+export async function submitForm(formName: string, data: FormData): Promise<boolean> {
+  if (!FORM_EMAIL_ENDPOINT) return false;
+
   data.set("form-name", formName);
   try {
-    const res = await fetch(NETLIFY_FORM_ENDPOINT, {
+    const res = await fetch(FORM_EMAIL_ENDPOINT, {
       method: "POST",
       body: data,
     });

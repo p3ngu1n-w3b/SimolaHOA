@@ -58,17 +58,15 @@ export function InstallPrompt() {
     };
     window.addEventListener("appinstalled", onInstalled);
 
-    // iOS never fires beforeinstallprompt — show the banner anyway.
-    if (iosDevice) {
-      const t = setTimeout(() => setVisible(true), 1500);
-      return () => {
-        clearTimeout(t);
-        window.removeEventListener("beforeinstallprompt", onBeforeInstall);
-        window.removeEventListener("appinstalled", onInstalled);
-      };
-    }
+    // iOS never fires beforeinstallprompt — show the banner after a short delay.
+    // Android may also delay or skip the event; show instructions if it doesn't fire.
+    const fallbackDelay = iosDevice ? 1500 : 3000;
+    const fallbackTimer = setTimeout(() => {
+      setVisible(true);
+    }, fallbackDelay);
 
     return () => {
+      clearTimeout(fallbackTimer);
       window.removeEventListener("beforeinstallprompt", onBeforeInstall);
       window.removeEventListener("appinstalled", onInstalled);
     };

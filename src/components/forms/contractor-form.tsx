@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Loader2, Upload, X, Send, CheckCircle2 } from "lucide-react";
 import { contractorSchema, type ContractorInput } from "@/lib/validations";
-import { submitNetlifyForm } from "@/lib/submit-form";
+import { submitForm } from "@/lib/submit-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -45,10 +45,10 @@ export function ContractorForm() {
     try {
       const fd = new FormData();
       Object.entries(values).forEach(([k, v]) => fd.append(k, String(v ?? "")));
-      // Netlify Forms accepts one file per input field.
+      // One file per field for the email handler.
       if (files[0]) fd.append("document", files[0]);
       if (files[1]) fd.append("document_2", files[1]);
-      const ok = await submitNetlifyForm("contractor-registration", fd);
+      const ok = await submitForm("contractor-registration", fd);
       if (ok) {
         toast.success("Contractor registration submitted.");
         setDone("");

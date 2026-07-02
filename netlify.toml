@@ -7,8 +7,7 @@
   NEXT_TELEMETRY_DISABLED = "1"
 
 # The official Next.js runtime handles SSR/static rendering and image
-# optimisation. Netlify Forms detection runs automatically at deploy time
-# using the static skeleton in public/__forms.html.
+# optimisation.
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 

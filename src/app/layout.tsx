@@ -33,6 +33,7 @@ export const metadata: Metadata = {
   },
   description: SITE.description,
   applicationName: SITE.name,
+  manifest: "/manifest.webmanifest",
   keywords: [
     "Simola",
     "HOA",
@@ -107,6 +108,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="manifest" href="/manifest.webmanifest" />
+      </head>
       <body className={`${inter.variable} ${playfair.variable} font-sans`}>
         <Providers>
           {children}
