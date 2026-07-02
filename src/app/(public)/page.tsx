@@ -75,7 +75,7 @@ export default function HomePage() {
                 asChild
                 size="lg"
                 variant="outline"
-                className="border-white/40 bg-white/10 text-white hover:bg-white/20"
+                className="border-white/40 bg-white/10 text-white hover:border-destructive hover:bg-destructive hover:text-destructive-foreground"
               >
                 <Link href="/emergency-contacts">
                   <PhoneCall className="h-4 w-4" /> Emergency Contacts

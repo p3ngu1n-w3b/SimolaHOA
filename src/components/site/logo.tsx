@@ -45,22 +45,7 @@ export function BrandBanner({
   variant?: "default" | "on-dark";
 }) {
   return (
-    <div
-      className={cn(
-        "inline-flex max-w-full",
-        variant === "on-dark" && "rounded-xl bg-white/95 p-3 shadow-lg ring-1 ring-white/20",
-        className
-      )}
-    >
-      <Image
-        src={BRANDING.banner}
-        alt={BRANDING.alt}
-        width={BRANDING.bannerWidth}
-        height={BRANDING.bannerHeight}
-        priority
-        className="h-14 w-auto max-w-full md:h-16 lg:h-[4.5rem]"
-      />
-    </div>
+    <></>
   );
 }
 
