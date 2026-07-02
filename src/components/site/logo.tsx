@@ -30,7 +30,7 @@ export function Logo({
           width={BRANDING.logoWidth}
           height={BRANDING.logoHeight}
           priority
-          className="h-10 w-auto max-w-[min(100%,10rem)] sm:h-11 lg:h-12"
+          className="h-14 w-auto max-w-[min(100%,14rem)] sm:h-[3.75rem] lg:h-16"
         />
       </span>
     </Link>
